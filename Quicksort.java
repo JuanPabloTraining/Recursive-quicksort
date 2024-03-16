@@ -6,56 +6,65 @@ public class Quicksort {
         sort(list, 0, list.length-1);
     }
 
-    public void sort(int[] list, int li, int ri) {
-        if (ri > li) {
-            int pivotIndex = getPivotIndex(li, ri);
-            swap(list, pivotIndex, ri);
+    public void sort(int[] list, int leftIndex, int rightIndex) {
+        if (rightIndex > leftIndex) {
+            int pivotIndex = getPivotIndex(leftIndex, rightIndex);
+            swap(list, pivotIndex, rightIndex);
 
-            pivotIndex = orderedSwap(list, li, ri, list[ri], true);
-            swap(list, pivotIndex, ri);
+            pivotIndex = partitionPivot(list, leftIndex, rightIndex, list[rightIndex], true);
+            swap(list, pivotIndex, rightIndex);
 
-            sort(list, li, pivotIndex - 1);
-            sort(list, pivotIndex + 1, ri);
+            sort(list, leftIndex, pivotIndex - 1);
+            sort(list, pivotIndex + 1, rightIndex);
         }
     }
 
-    private int orderedSwap(int[] list, int li, int ri, int pivot, boolean canMoveLeftIndex) {
-
-        if (li >= ri) {
-            return ri;
+    private int partitionPivot(int[] list,
+                               int leftIndex,
+                               int rightIndex,
+                               int pivot,
+                               boolean canMoveLeftIndex
+    ) {
+        if (leftIndex >= rightIndex) {
+            return rightIndex;
         }
 
-        if (list[li] >= pivot && canMoveLeftIndex) {
-            return orderedSwap(list, li, ri-1, pivot, false);
+        if (list[leftIndex] >= pivot && canMoveLeftIndex) {
+            return partitionPivot(list,
+                                  leftIndex,
+                                  rightIndex-1,
+                                  pivot,
+                                  false);
         }
 
-        if (list[ri] < pivot && !canMoveLeftIndex) {
-            swap(list, ri, li);
-            return orderedSwap(list, li+1, ri, pivot, true);
+        if (list[rightIndex] < pivot && !canMoveLeftIndex) {
+            swap(list, rightIndex, leftIndex);
+            return partitionPivot(list,
+                                  leftIndex+1,
+                                  rightIndex,
+                                  pivot,
+                                  true);
         }
 
-        int liIncrement = (canMoveLeftIndex) ? 1 : 0;
-        int riIncrement = (canMoveLeftIndex) ? 0 : -1;
-        return orderedSwap(list, li + liIncrement, ri + riIncrement, pivot, canMoveLeftIndex);
+        int leftIndexIncrement = (canMoveLeftIndex) ? 1 : 0;
+        int rightIndexIncrement = (canMoveLeftIndex) ? 0 : -1;
+        return partitionPivot(list,
+                              leftIndex + leftIndexIncrement,
+                              rightIndex + rightIndexIncrement,
+                              pivot,
+                              canMoveLeftIndex);
     }
 
-    private void swap(int[] list, int index1, int index2) {
-        if (index1 != index2) {
-            int number1 = list[index1];
-            list[index1] = list[index2];
-            list[index2] = number1;
+    private void swap(int[] list, int leftIndex, int rightIndex) {
+        if (rightIndex != leftIndex) {
+            int number1 = list[rightIndex];
+            list[rightIndex] = list[leftIndex];
+            list[leftIndex] = number1;
         }
     }
 
-    private int getPivotIndex(int li, int ri) {
+    private int getPivotIndex(int leftIndex, int rightIndex) {
         Random rand = new Random();
-        return rand.nextInt(ri - li) + li;
-    }
-
-    private void printList(int[] list) {
-        for (int element: list) {
-            System.out.print(element + "\t");
-        }
-        System.out.println();
+        return rand.nextInt(rightIndex - leftIndex) + leftIndex;
     }
 }
